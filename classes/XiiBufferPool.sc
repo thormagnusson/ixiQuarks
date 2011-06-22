@@ -55,7 +55,7 @@ XiiBufferPool {
 		foreColor = Color.new255(103, 148, 103);
 		outbus = 0;
 		
-		win = GUI.window.new(name, Rect(point.x, point.y, 220, 195), resizable: true);
+		win = GUI.window.new(name, Rect(point.x, point.y, 220, 195), resizable: false);
 
 		GUI.staticText.new(win, Rect(10, 0, 40, 12))
 			.font_(GUI.font.new("Helvetica", 9))

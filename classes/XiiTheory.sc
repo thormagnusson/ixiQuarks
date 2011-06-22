@@ -107,6 +107,29 @@ Task({
 			["chromatic", (0..11)]
 		]
 	}
+	
+	*tunings {
+		^[
+			["equal", Tuning.et],
+			["pythagorean", Tuning.pythagorean],
+			["just", Tuning.just],
+			["sept 1", Tuning.sept1],
+			["sept 2", Tuning.sept2],
+			["mean 4", Tuning.mean4],
+			["mean 5", Tuning.mean5],
+			["mean 6", Tuning.mean6],
+			["kirnberger", Tuning.kirnberger],
+			["werckmeister", Tuning.werckmeister],
+			["vallotti", Tuning.vallotti],
+			["young", Tuning.young],
+			["reinhard", Tuning.reinhard],
+			["wcHarm", Tuning.wcHarm],
+			["wcSJ", Tuning.wcSJ]
+
+		]	
+	}
+	
+	
 }
 
 

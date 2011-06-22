@@ -252,6 +252,8 @@ Library.at(\menuItems,\tools,\guiDebugger).value;
 
 
 
+
+
 XiiQuarks {	
 
 	var thisversion = 4;
@@ -360,7 +362,8 @@ XiiQuarks {
 				txtv.value_(0);
 				txtv.focus(true);
 			})
-			.keyDownAction_({arg view, char, modifiers, unicode;
+			// KEYCODE HERE AT THE END WILL MAKE IT Qt COMPATIBLE
+			.keyDownAction_({arg view, char, modifiers, unicode, keycode;
 				if (unicode == 16rF700, { typesview.valueAction = typesview.value - 1;  });
 				if (unicode == 16rF703, { txtv.focus(true); });
 				if (unicode == 16rF701, { typesview.valueAction = typesview.value + 1;  });

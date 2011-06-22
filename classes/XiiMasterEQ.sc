@@ -1,20 +1,21 @@
 // requires wslib & TabbedView quarks
 // wslib 2009
-// this is code by kung-fu master wouter snoei
+// this is code by kung-fu master wouter snoei (messed with by ixi)
 
 XiiMasterEQ {
-	classvar <>eq; // dict with all variables
-	classvar <window;
+	classvar <>eq, <>win; // dict with all variables
+	classvar <>xiigui;
+	classvar setting, params, point;
 	
-	*new { |numCha = (2), server|
+	*new { | server, numCha = (2), setting|
 		
 		if( \TabbedView.asClass.notNil )
-			{ if( eq.isNil or: { window.dataptr.isNil } )
-				{ ^this.newMasterEQ( numCha, server ) }
+			{ if( eq.isNil or: { win.dataptr.isNil } )
+				{ ^this.newMasterEQ(  server, numCha, setting ) }
 				{ if( eq[ \numChannels ] != numCha )
 					{ if( eq[ \playing ] ) { eq[ \free ].value; };
 					  eq[ \numChannels ] = numCha;
-					  window.name = "MasterEQ (% ch)".format( numCha );
+					  win.name = "MasterEQ (% ch)".format( numCha );
 					  eq[ \play ].value; }
 					{ if( eq[ \playing ].not ) 
 						{ eq[ \play ].value; eq[ \bypass_button ].value=1 }; }
@@ -25,19 +26,23 @@ XiiMasterEQ {
 	*stop { eq !? { if( eq[ \playing ] ) { eq[ \free ].value; eq[ \bypass_button ].value=0 }; } }
 	*start { this.new( eq !? { eq[ \numChannels ] } ); }
 			
-	*newMasterEQ { | server, numCha = 2 |
+	*newMasterEQ { |  server, numCha = 2, setting |
 		var s;
 		s = server ? Server.default;
 		
 		eq = ();
+
+xiigui = nil;
+point = if(setting.isNil, {Point(310, 250)}, {setting[1]});
+params = if(setting.isNil, {[0, 1, 0.2, 25, 1, 0, 0, 1, 1.0, 0]}, {setting[2]});
+
+		win = GUI.window.new( "MasterEQ (% ch)".format( numCha ), 
+				Rect(point.x, point.y, 346, 270), false ).front; 
 		
-		window = GUI.window.new( "MasterEQ (% ch)".format( numCha ), 
-				Rect(300, 100, 346, 270), false ).front; 
+		win.view.decorator = FlowLayout( win.view.bounds, 10@10, 4@10 );
 		
-		window.view.decorator = FlowLayout( window.view.bounds, 10@10, 4@10 );
-		
-		eq[ \uvw ] = GUI.userView.new( window, 
-			window.view.bounds.insetBy(10,10).height_(180) ).resize_(5);
+		eq[ \uvw ] = GUI.userView.new( win, 
+			win.view.bounds.insetBy(10,10).height_(180) ).resize_(5);
 		
 		eq[ \font ] = GUI.font.new( GUI.font.defaultMonoFace, 9 );
 		
@@ -73,8 +78,8 @@ XiiMasterEQ {
 		
 		eq[ \selected ] = -1;
 		
-		eq[ \tvw ] = TabbedView( window, 
-				window.view.bounds.insetBy(10,10).height_(35).top_(200),
+		eq[ \tvw ] = TabbedView( win, 
+				win.view.bounds.insetBy(10,10).height_(35).top_(200),
 			[ "low shelf", "peak 1", "peak 2", "peak 3", "high shelf" ],
 			{ |i| Color.hsv( i.linlin(0,5,0,1), 0.75, 0.5).alpha_( 0.25 ); }!5 )
 				.font_( eq[ \font ] )
@@ -137,34 +142,34 @@ XiiMasterEQ {
 				});
 			};
 			
-		eq[ \pumenu ] = GUI.popUpMenu.new( window, 100@15 )
+		eq[ \pumenu ] = GUI.popUpMenu.new( win, 100@15 )
 			.font_( eq[ \font ] ).canFocus_(false);
 			
 		//eq[ \pumenu_check ].value;
 		eq[ \pu_buttons ] = [
-			RoundButton.new( window, 15@15 )
+			RoundButton.new( win, 15@15 )
 				.radius_( 2 ).border_(1)
 				.states_( [[ '+' ]] ),
-			RoundButton.new( window,  15@15 )
+			RoundButton.new( win,  15@15 )
 				.radius_( 2 ).border_(1)
 				.states_( [[ '-' ]] ),	
 			];
 			
-		GUI.staticText.new( window, 26@15  );
+		GUI.staticText.new( win, 26@15  );
 		
 		eq[ \pu_filebuttons ] = [
-			RoundButton.new( window, 50@15 )
+			RoundButton.new( win, 50@15 )
 				.extrude_( false ).font_( eq[ \font ] )
 				.states_( [[ "save", Color.black, Color.red(0.75).alpha_(0.25) ]] ),
-			RoundButton.new( window,  50@15 )
+			RoundButton.new( win,  50@15 )
 				.extrude_( false ).font_( eq[ \font ] )
 				.states_( [[ "revert", Color.black, Color.green(0.75).alpha_(0.25) ]] )
 			];
 			
 			
-		GUI.staticText.new( window, 24@15  );
+		GUI.staticText.new( win, 24@15  );
 		
-		eq[ \bypass_button ] = RoundButton.new( window, 17@17 )
+		eq[ \bypass_button ] = RoundButton.new( win, 17@17 )
 				.extrude_( false ) //.font_( eq[ \font ] )
 				.states_( [
 					[ 'power', Color.gray(0.2), Color.white(0.75).alpha_(0.25) ],
@@ -522,7 +527,7 @@ XiiMasterEQ {
 			
 			};
 		eq[ \pu_filebuttons ][1].action.value; // revert
-		 window.refresh;
+		 win.refresh;
 		 
 		//eq[ \uvw ].refreshInRect( eq[ \uvw ].bounds.insetBy(-2,-2) );
 		);
@@ -568,7 +573,7 @@ XiiMasterEQ {
 			CmdPeriod.remove( eq );
 			};
 			
-		window.onClose = { if( eq[ \playing ] != false ) { eq[ \free ].value; }; };
+		win.onClose = { if( eq[ \playing ] != false ) { eq[ \free ].value; }; };
 		
 		(
 		eq[ \ar ] = { |input|
@@ -602,5 +607,12 @@ XiiMasterEQ {
 		
 		}
 	
+	*getState { // for save settings
+		var point;
+		point = Point(win.bounds.left, win.bounds.top);
+		^[2, point, params];
+	}
+
+
 	
 	}

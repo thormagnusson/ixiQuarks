@@ -145,7 +145,7 @@ XiiPitchCircle {
 		this.drawLabel(aLabel);
 	}
 	
-	drawSet { |aSet, aLabel, aDotsCol|
+	drawSet { |aSet, aOffset=0, aLabel, aDotsCol|
 		if(aSet.isNil, {
 			aSet = set;
 		}, {
@@ -155,7 +155,7 @@ XiiPitchCircle {
 		aLabel = aLabel ? set;
 		aDotsCol = aDotsCol ? dotsColFn.value(set);
 		usrView.drawFunc = {
-			this.makeCircle;
+			this.makeCircle(aOffset);
 			this.makeDots(set, aDotsCol);
 		};
 		usrView.refresh;
@@ -230,8 +230,10 @@ XiiPitchCircle {
 		text.font_(Font("Helvetica",  labelSize));
 	}
 	
-	makeCircle {
+	makeCircle {arg offset=0;
 		var noteLabel, adjustedOffset, centre;
+		notes = [ "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" ];
+		notes = notes.rotate(offset.neg);
 		centre = size/2;
 		// Draw the circle
 		Pen.color = Color.black; 
@@ -244,6 +246,7 @@ XiiPitchCircle {
 		// leters aren't rotated in order to be horizontally aligned
 		integers.do({ |i, j|  
 			noteLabel = if (drawInts, { i.asString}, {notes@j });
+			noteLabel = notes@j;
 			Pen.stringAtPoint(
 				noteLabel,  
 				Polar.new(radius * 0.75, 1.5pi + ((2pi/steps) * j)).asPoint 
@@ -251,8 +254,8 @@ XiiPitchCircle {
 		});
 		Pen.translate(centre*0.05, centre * 0.07); // adjust back to centred		// Draw the lines
 		steps.do({ |i|
-			Pen.moveTo(0@((radius * 0.92).neg));
-			Pen.lineTo(0@((radius * 1.08).neg));
+			Pen.moveTo(0@((radius * 0.96).neg));
+			Pen.lineTo(0@((radius * 1.04).neg));
 			Pen.moveTo(0@0);
 			Pen.color = Color.black;
 			Pen.stroke;
