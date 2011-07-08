@@ -126,6 +126,7 @@ XixiPainter {
 	}
 
 	stop {
+		running = false;
 		playerTask.stop;
 	}
 

@@ -10,6 +10,7 @@ XixiWorm {
 	var <>tailcolor;
 	var wormArray, <>playThreshholdFlag;
 	var curverange, speed;
+	var predatorArray;
 	
   //	var spriteNum, boxArray;
 	//	var <>r, <>g, <>b, fillcolor;
@@ -139,6 +140,10 @@ XixiWorm {
 	
 	supplyOtherWorms {arg worms;
 		wormArray = worms;
+	}
+	
+	supplyPredatorArray {|argpredatorArray| 
+		predatorArray = argpredatorArray;
 	}
 
 	

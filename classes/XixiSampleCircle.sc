@@ -15,11 +15,15 @@ XixiSampleCircle {
 	var inbus, pitchratio;
 	var env;
 	
-	*new { | point, stageRect, soundmode=1 | 
-		^super.new.initXixiSampleCircle(point, stageRect, soundmode);
+	// new vars
+	var radius, rangeradius;
+	var amp, drawer;
+	
+	*new { | point, stageRect, drawer | 
+		^super.new.initXixiSampleCircle(point, stageRect, drawer);
 	}
 	
-	initXixiSampleCircle { |argpoint, argstageRect, soundmode|
+	initXixiSampleCircle { |argpoint, argstageRect, argdrawer|
 		if(argstageRect == nil, {
 			stageRect = argpoint;
 			point = Point(stageRect.width.rand, stageRect.height.rand);
@@ -27,11 +31,12 @@ XixiSampleCircle {
 			stageRect = argstageRect;
 			point = argpoint;
 		});
-		fillcolor = Color.yellow;
+		drawer = argdrawer;
+		
+		fillcolor = Color.rand.alpha_(1);
 		strokecolor = Color.black;
 		predatorArray = [];
 		rot = pi.rand;
-		rect = Rect(point.x-5, point.y-5, 10, 10);
 				
 		destpoint = Point(50.rand2, 50.rand2);
 		move = false;
@@ -50,10 +55,14 @@ XixiSampleCircle {
 		// levels, times, timescale
 		env = [[0]++[0.0, 1.0, 0.7, 0.7, 0.0], [0.0, 0.05, 0.25, 0.75, 1.0], 1];
 		
+		radius = 15;
+		rangeradius = 30;
+		rect = Rect(point.x-radius, point.y-radius, radius*2, radius*2);
+		
 		pitch = stageRect.height - point.y;
 		fixedPitchMode = false;
 		fixedPitch = pitch;
-		this.setAteFunc_(soundmode);
+//		this.setAteFunc_(soundmode);
 		this.setRandomBuffer; // get a random sample (if the pool is loaded)
 	}
 	
@@ -72,12 +81,13 @@ XixiSampleCircle {
 
 	update {
 		var dist, close;
+		/*
 		predatorArray.do({ |predator|
 			if(rect.intersects(Rect(predator.point.x-10, predator.point.y-10, 20, 20)), {
 				predator.moveAway;
 			})
 		});
-		
+		*/
 		close = 100;
 		predatorArray.do({ |predator|
 			var amp;
@@ -96,25 +106,29 @@ XixiSampleCircle {
 	draw {
 		^{
 			GUI.pen.use({
-				if ( GUI.id == \cocoa, {  Pen.setShadow(1@2, 5, Color.black) });
+				// if ( GUI.id == \cocoa, {  Pen.setShadow(1@2, 5, Color.black) });
 
 				GUI.pen.color = Color.black;
 				GUI.pen.width = 1;
 				GUI.pen.translate(point.x, point.y);
 				GUI.pen.moveTo(0@0);
-				if(selected, {
-					GUI.pen.color = Color.new(0,0,0,0.3);
-					GUI.pen.strokeOval(Rect(-10, -10, 20, 20));
-					GUI.pen.color = Color.black;
-				});
 				GUI.pen.rotate(rot);
 		     	GUI.pen.line(0@0, 12@3);
 		     	GUI.pen.line(0@0, 12@ -3);
+		     	
+		     	GUI.pen.color = Color.new(0,0,0,0.3);
+		     	GUI.pen.strokeOval(Rect(-1*rangeradius, -1*rangeradius, rangeradius*2, rangeradius*2));
+
 		     	GUI.pen.stroke;
 		     	GUI.pen.color = fillcolor;
-		    		GUI.pen.fillOval(Rect(-5, -5, 10, 10));
+		    		GUI.pen.fillOval(Rect(-1*radius, -1*radius, radius*2, radius*2));
 		     	GUI.pen.color = Color.black;
-		     	GUI.pen.strokeOval(Rect(-5, -5, 10, 10));
+		     	GUI.pen.strokeOval(Rect(-1*radius, -1*radius, radius*2, radius*2));
+				if(selected, {
+					//GUI.pen.color = Color.new(0,0,0,0.3);
+					GUI.pen.fillOval(Rect(-5, -5, 10, 10));
+					//GUI.pen.color = Color.black;
+				});
 			});
     		}
 	}
@@ -329,11 +343,37 @@ XixiSampleCircle {
 		^point;
 	}
 	
+	setSize_{arg size;
+		if(selected, { radius = size/2; if(rangeradius<radius, { rangeradius = radius }) });
+		drawer.refresh;
+	}
+
+	setRange_{arg range;
+		if(selected, { rangeradius = range });
+		drawer.refresh;
+	}
+
+	setAmp_{arg aamp;
+		if(selected, { amp = aamp; fillcolor.alpha_(aamp) });
+		drawer.refresh;
+	}
+	
 	mouseDown { |x, y, func|
-		if(rect.intersects(Rect(x+7, y+5, 1, 1)), {
-			preyArray.do({arg prey; prey.selected = false});
+		if(rect.intersects(Rect(x, y, 1, 1)), {
+			preyArray.do({ arg prey; prey.selected = false });
 			move = true;
 			selected = true;
+			
+			// set circle to top
+			block{|break| 
+				preyArray.copy.do({ arg prey, i; 
+					if(prey.selected == true, { 
+						preyArray.swap(i, preyArray.size-1); 
+						drawer.replaceDrawList(preyArray);
+						break.value 
+					})
+				})
+			};
 			if(fixedPitchMode, {
 				pitch = fixedPitch;
 				pitchratio = 1.0; // rate for buffers and audiostream
@@ -341,11 +381,13 @@ XixiSampleCircle {
 				pitch = stageRect.height - point.y;
 				pitchratio = ((pitch/460)+0.5); // rate for buffers and audiostream
 			});
+/*
 			if(synthesis == false, {
 				sampleNameField.string_(myBufferName);
 			},{
 				sampleNameField.string_(pitch.round(0.01).asString ++ "       " ++ pitch.cpsmidi.midinote);
 			});
+*/
 			^true;
 		}, {
 			^false;
@@ -355,7 +397,7 @@ XixiSampleCircle {
 	mouseTrack { |x, y, func|
 		if(move==true, {
 			point = Point(x, y);
-			rect = Rect(point.x, point.y, 10, 10);
+			rect = Rect(point.x-radius, point.y-radius, radius*2, radius*2);
 			if(fixedPitchMode, {
 				pitch = fixedPitch;
 				pitchratio = 1.0; // rate for buffers and audiostream
@@ -370,7 +412,7 @@ XixiSampleCircle {
 	}
 		
 	mouseUp { |x, y, func|
-		if(rect.intersects( Rect(x+7, y+5, 1, 1) ), {
+		if(rect.intersects( Rect(x, y, 1, 1) ), {
 			move = false;			
 		});
 	}

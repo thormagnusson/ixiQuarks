@@ -21,8 +21,8 @@ XiiWorms {
 		var funcwin, envwin, aswin, midikwin; // in order to close all windows on main win closing
  		
 		gBufferPoolNum = 0;
-		preyArray = [];
-		predatorArray = [];
+//		preyArray = [];
+//		predatorArray = [];
 		sndNameList = List.new;
 		bufferList = List.new; // contains bufnums of buffers (not buffers)
 		
@@ -44,10 +44,8 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 		
 		a = XixiPainter.new(win, Rect(10, 5, 620, 470)); // 640 * 480 resolution
 		
-		3.do({
-			preyArray = preyArray.add(
-				XixiSampleCircle.new(Point.new(100+(400.rand), 100+(200.rand)), Rect(10, 5, 620, 470)));
-		});
+
+		preyArray = Array.fill(3, { XixiSampleCircle.new(Point.new(100+(400.rand), 100+(200.rand)), Rect(10, 5, 620, 470), a) });
 		/*
 		4.do({
 			predatorArray = predatorArray.add(
@@ -61,7 +59,7 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 		*/
 
 		//preyArray.do({|prey| prey.supplyPredatorArray(predatorArray)});
-		//preyArray.do({|prey| prey.supplyPreyArray(preyArray)});
+		preyArray.do({|prey| prey.supplyPreyArray(preyArray)});
 		//preyArray.choose.selected = true;
 		
 		a.addToDrawList(preyArray);
@@ -119,7 +117,7 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 			.font_(GUI.font.new("Helvetica", 9))
 			.states_([["add circle",Color.black,Color.clear]])
 			.action_({ var p;
-				p = XixiSampleCircle.new(Point.new(100+(400.rand), 100+(200.rand)), Rect(10, 5, 620, 470));
+				p = XixiSampleCircle.new(Point.new(100+(400.rand), 100+(200.rand)), Rect(10, 5, 620, 470), a);
 				p.supplyTextFields([sampleNameField, pitchSampleField]);
 				p.setRandomBuffer(gBufferPoolNum); // new prey gets a random buffer
 				preyArray = preyArray.add(p);
@@ -184,6 +182,7 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 					preyArray.do({|prey| prey.setMyBuffer(selbPool.items[gBufferPoolNum], popup.value)});
 				})
 				.addAction({bufferPop.action.value( bufferPop.value )}, \mouseDownAction);
+		
 		
 		StaticText.new(win, Rect(375, 483, 80, 20))
 			.font_(GUI.font.new("Helvetica", 9))
@@ -299,6 +298,30 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 			.action_({arg sl; 
 				predatorArray.do({|predator, i| predator.setSpeed = sl.value/10});
 				params[3] = sl.value;
+			});
+
+		OSCIISlider.new(win, Rect(265, 485, 117, 10), "- size", 15, 100, 20, 1)
+			.font_(GUI.font.new("Helvetica", 9))
+			.action_({arg sl; 
+				preyArray.do({|prey, i| prey.setSize_(sl.value)});
+				win.refresh;
+				//params[0] = sl.value;
+			});
+		
+		// tailslider
+		OSCIISlider.new(win, Rect(265, 515, 117, 10), "- range", 20, 200, 10, 1)
+			.font_(GUI.font.new("Helvetica", 9))
+			.action_({arg sl; 
+				preyArray.do({|prey, i| prey.setRange_(sl.value)});
+				win.refresh;
+				//params[1] = sl.value;
+			});
+		
+		OSCIISlider.new(win, Rect(265, 545, 117, 10), "- volume", 0, 10, 5, 0.1)
+			.font_(GUI.font.new("Helvetica", 9))
+			.action_({arg sl; 
+				preyArray.do({|prey, i| prey.setAmp = sl.value/10});
+				//params[3] = sl.value;
 			});
 		
 		// -- stuff to do when GUIs are created
