@@ -19,10 +19,11 @@ XiiWorms {
 		var inbus, createEnvButt, envButt;
 		var curveSl, lengthSl, speedSl, volSl, point;
 		var funcwin, envwin, aswin, midikwin; // in order to close all windows on main win closing
- 		
+ 		var sizeSl, rangeSl, circleVolSl;
+
 		gBufferPoolNum = 0;
 //		preyArray = [];
-//		predatorArray = [];
+		predatorArray = [];
 		sndNameList = List.new;
 		bufferList = List.new; // contains bufnums of buffers (not buffers)
 		
@@ -39,28 +40,16 @@ xiigui = nil;
 point = if(setting.isNil, {Point(208, 164)}, {setting[1]});
 params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 
-		win = GUI.window.new("- worms -", Rect(point.x, point.y, 640, 580), resizable:false);
+		win = GUI.window.new("- worms -", Rect(point.x, point.y, 960, 720), resizable:false);
 		wview = win.view;
 		
-		a = XixiPainter.new(win, Rect(10, 5, 620, 470)); // 640 * 480 resolution
+		a = XixiPainter.new(win, Rect(10, 5, 940, win.bounds.height-110)); // 640 * 480 resolution
 		
-
-		preyArray = Array.fill(3, { XixiSampleCircle.new(Point.new(100+(400.rand), 100+(200.rand)), Rect(10, 5, 620, 470), a) });
-		/*
-		4.do({
-			predatorArray = predatorArray.add(
-				XixiWorm.new(Point.new(-10, -10), Rect(10, 5, 620, 470), preyArray));
-		});
-				
-		4.do({
-			predatorArray = predatorArray.add(
-				XixiWorm.new(Point.new(30, 30), 6, 25, Rect(12, 5, 630, 470)))
-		});
-		*/
+		preyArray = Array.fill(3, { XixiSampleCircle.new(Point.new(100+(400.rand), 100+(200.rand)), Rect(10, 5, 940, win.bounds.height-110), a) });
 
 		//preyArray.do({|prey| prey.supplyPredatorArray(predatorArray)});
 		preyArray.do({|prey| prey.supplyPreyArray(preyArray)});
-		//preyArray.choose.selected = true;
+		preyArray.choose.selected = true;
 		
 		a.addToDrawList(preyArray);
 		
@@ -86,11 +75,11 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 
 		// -- the GUI
 		// add predator
-		Button.new(win, Rect(10, 485, 65, 18))
+		Button.new(win, Rect(10, win.bounds.height-95, 65, 18))
 			.font_(GUI.font.new("Helvetica", 9))
 			.states_([["add worm",Color.black,Color.clear]])
 			.action_({ var p;
-				p = 	XixiWorm.new(Point.new(600.rand, 500.rand), 6, lengthSl.value, Rect(10, 5, 620, 470));
+				p = 	XixiWorm.new(Point.new(600.rand, 500.rand), 6, lengthSl.value, Rect(10, 5, 940, win.bounds.height-110));
 				predatorArray = predatorArray.add(p);
 				a.replaceDrawList(preyArray);
 				a.addToDrawList(predatorArray);
@@ -100,7 +89,7 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 			});
 			
 		// delete predator
-		Button.new(win, Rect(10, 506, 65, 18))
+		Button.new(win, Rect(10, win.bounds.height-74, 65, 18))
 			.font_(GUI.font.new("Helvetica", 9))
 			.states_([["del predator",Color.black,Color.clear]])
 			.action_({
@@ -113,7 +102,7 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 			});
 		
 		// add circle
-		Button.new(win, Rect(78, 485, 50, 18))
+		Button.new(win, Rect(78, win.bounds.height-95, 50, 18))
 			.font_(GUI.font.new("Helvetica", 9))
 			.states_([["add circle",Color.black,Color.clear]])
 			.action_({ var p;
@@ -132,7 +121,7 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 			});
 		
 		// delete prey
-		Button.new(win, Rect(78, 506, 50, 18))
+		Button.new(win, Rect(78, win.bounds.height-74, 50, 18))
 			.font_(GUI.font.new("Helvetica", 9))
 			.states_([["del prey",Color.black,Color.clear]])
 			.action_({
@@ -145,6 +134,7 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 				win.refresh;
 			});
 		
+		/*
 		pitchSampleField = StaticText.new(win, Rect(275, 535, 60, 20))
 				.font_(GUI.font.new("Helvetica", 9))
 				.string_("prey sample :");
@@ -153,14 +143,16 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 				.font_(GUI.font.new("Helvetica", 9))
 				.string_("none");
 		
+		
 		StaticText.new(win, Rect(265, 530, 205, 30))
 				.background_(Color.new255(255, 100, 0, 30))
 				.string_("");
 		
 		preyArray.do({|prey| prey.supplyTextFields([sampleNameField, pitchSampleField])});
 		
+		*/
 		
-		selbPool = PopUpMenu.new(win, Rect(265, 485, 102, 16)) // 530
+		selbPool = PopUpMenu.new(win, Rect(400, win.bounds.height-95, 102, 16)) // 530
 				.font_(GUI.font.new("Helvetica", 9))
 				.items_( if(XQ.globalBufferDict.keys.asArray == [], {["no pool"]}, {XQ.globalBufferDict.keys.asArray.sort}) )
 				.value_(0)
@@ -174,7 +166,7 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 					}
 				});		
 			
-		bufferPop = PopUpMenu.new(win,Rect(265, 505, 102, 16))
+		bufferPop = PopUpMenu.new(win,Rect(400, win.bounds.height-74, 102, 16))
 				.font_(GUI.font.new("Helvetica", 9))
 				.items_(["no buffer 1", "no buffer 2"])
 				.background_(Color.new255(255, 255, 255))
@@ -183,12 +175,13 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 				})
 				.addAction({bufferPop.action.value( bufferPop.value )}, \mouseDownAction);
 		
-		
-		StaticText.new(win, Rect(375, 483, 80, 20))
+		/*
+		StaticText.new(win, Rect(410, win.bounds.height-60, 80, 20))
 			.font_(GUI.font.new("Helvetica", 9))
 			.string_("sound :");
+		*/
 		
-		soundFuncPop = PopUpMenu.new(win, Rect(410, 485, 60, 16))
+		soundFuncPop = PopUpMenu.new(win, Rect(510, win.bounds.height-95, 60, 16))
 				.font_(GUI.font.new("Helvetica", 9))
 				.items_(["sample", "sine", "bells", "sines", "synth1", "ks_string", 
 				"ixi_string", "impulse", "ringz", "klanks", "scode", "audiostream"])
@@ -211,11 +204,13 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 				})
 				.value_(1);
 		
-		StaticText.new(win, Rect(375, 505, 80, 20))
+		/*
+		StaticText.new(win, Rect(375, win.bounds.height-74, 80, 20))
 			.font_(GUI.font.new("Helvetica", 9))
 			.string_("outbus :");
+		*/
 		
-		outBus = PopUpMenu.new(win, Rect(410, 507, 60,16))
+		outBus = PopUpMenu.new(win, Rect(510, win.bounds.height-74, 60,16))
 				.font_(GUI.font.new("Helvetica", 9))
 				.items_(XiiACDropDownChannels.getStereoChnList)
 				.background_(Color.new255(255, 255, 255))
@@ -224,7 +219,7 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 					params[4] = popup.value;
 				});
 		
-		GUI.button.new(win, Rect(510, 485, 70, 18))
+		GUI.button.new(win, Rect(610, win.bounds.height-74, 70, 18))
 			.font_(GUI.font.new("Helvetica", 9))
 			.states_([["fixed pitch",Color.black,Color.clear], ["locative pitch",Color.black,Color.clear]])
 			.action_({arg butt; 
@@ -254,15 +249,22 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 			});
 			
 		// start stop
-		playButt = Button.new(win, Rect(585, 485, 45, 18))
+		playButt = Button.new(win, Rect(585, win.bounds.height-95, 45, 18))
 			.font_(GUI.font.new("Helvetica", 9))
 			.states_([["start",Color.black,Color.clear], ["stop",Color.black, Color.green(alpha:0.2)]])
 			.action_({arg butt;
 				if(butt.value == 1, {
+					predatorArray.postln;
 					if(predatorArray == [], {
-						predatorArray = Array.fill(1, {XixiWorm.new(Point.new(300.rand, 300.rand), 6, 10, Rect(12, 5, 630, 470)) });
+						predatorArray = predatorArray.add(XixiWorm.new(Point.new(300.rand, 300.rand), 6, 10, Rect(12, 5, win.bounds.width-20, win.bounds.height-110)) );
 						predatorArray.do({|predator| predator.supplyOtherWorms(predatorArray)});
+						preyArray.do({|prey| prey.supplyPredatorArray(predatorArray)});
 						a.addToDrawList(predatorArray);
+//					}, {
+//						predatorArray = predatorArray.add(XixiWorm.new(Point.new(300.rand, 300.rand), 6, 10, Rect(12, 5, 630, 470)) );
+//						predatorArray.do({|predator| predator.supplyOtherWorms(predatorArray)});
+//						preyArray.do({|prey| prey.supplyPredatorArray(predatorArray)});
+//						a.addToDrawList(predatorArray);
 					});
 					a.start;
 				}, {
@@ -271,14 +273,14 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 			});
 		
 		
-		volSl = OSCIISlider.new(win, Rect(510, 513, 117, 10), "- vol", 0, 1, 0.4, 0.0001, \amp)
+		volSl = OSCIISlider.new(win, Rect(510, win.bounds.height-50, 117, 10), "- vol", 0, 1, 0.4, 0.0001, \amp)
 			.font_(GUI.font.new("Helvetica", 9))
 			.action_({arg sl; 
 				preyArray.do({|prey, i| prey.setVolume_(sl.value)});
 				params[5] = sl.value;
 			});
 		
-		curveSl = OSCIISlider.new(win, Rect(137, 485, 117, 10), "- curverange", 1, 50, 4, 1)
+		curveSl = OSCIISlider.new(win, Rect(137, win.bounds.height-95, 117, 10), "- curverange", 1, 50, 4, 1)
 			.font_(GUI.font.new("Helvetica", 9))
 			.action_({arg sl; 
 				predatorArray.do({|predator, i| predator.setCurves_(sl.value)});
@@ -286,21 +288,21 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 			});
 		
 		// tailslider
-		lengthSl = OSCIISlider.new(win, Rect(137, 515, 117, 10), "- length", 1, 25, 10, 1)
+		lengthSl = OSCIISlider.new(win, Rect(137, win.bounds.height-65, 117, 10), "- length", 1, 25, 10, 1)
 			.font_(GUI.font.new("Helvetica", 9))
 			.action_({arg sl; 
 				predatorArray.do({|predator, i| predator.setLength_(sl.value)});
 				params[1] = sl.value;
 			});
 		
-		speedSl = OSCIISlider.new(win, Rect(137, 545, 117, 10), "- speed", 5, 60, 20, 0.1)
+		speedSl = OSCIISlider.new(win, Rect(137, win.bounds.height-35, 117, 10), "- speed", 5, 60, 20, 0.1)
 			.font_(GUI.font.new("Helvetica", 9))
 			.action_({arg sl; 
 				predatorArray.do({|predator, i| predator.setSpeed = sl.value/10});
 				params[3] = sl.value;
 			});
 
-		OSCIISlider.new(win, Rect(265, 485, 117, 10), "- size", 15, 100, 20, 1)
+		sizeSl = OSCIISlider.new(win, Rect(265, win.bounds.height-95, 117, 10), "- size", 15, 100, 20, 1)
 			.font_(GUI.font.new("Helvetica", 9))
 			.action_({arg sl; 
 				preyArray.do({|prey, i| prey.setSize_(sl.value)});
@@ -308,8 +310,8 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 				//params[0] = sl.value;
 			});
 		
-		// tailslider
-		OSCIISlider.new(win, Rect(265, 515, 117, 10), "- range", 20, 200, 10, 1)
+		// rangeslider
+		rangeSl = OSCIISlider.new(win, Rect(265, win.bounds.height-65, 117, 10), "- range", 20, 200, 10, 1)
 			.font_(GUI.font.new("Helvetica", 9))
 			.action_({arg sl; 
 				preyArray.do({|prey, i| prey.setRange_(sl.value)});
@@ -317,7 +319,7 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 				//params[1] = sl.value;
 			});
 		
-		OSCIISlider.new(win, Rect(265, 545, 117, 10), "- volume", 0, 10, 5, 0.1)
+		circleVolSl = OSCIISlider.new(win, Rect(265, win.bounds.height-35, 117, 10), "- volume", 0, 10, 5, 0.1)
 			.font_(GUI.font.new("Helvetica", 9))
 			.action_({arg sl; 
 				preyArray.do({|prey, i| prey.setAmp = sl.value/10});
@@ -343,6 +345,7 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 			})
 		};
 		
+		/*
 		createCodeWin = {
 				var func, subm, test, view;
 				funcwin = Window.new("scode", Rect(600, 400, 440, 200)).front;
@@ -380,6 +383,8 @@ params = if(setting.isNil, {[4, 18, 20, 1, 0, 0.4]}, {setting[2]});
 
 		};
 
+		*/
+		
 		createEnvWin = {arg index;
 			var envview, timesl, setButt, timeScale;
 			var selectedprey;

@@ -58,9 +58,11 @@ XiiMp3Player{
 					view.value_(view.value-1);
 				});
 				if(mod == 1048840, { // Apple key
+					"storing playlist".postln;
 					playlists[char.asSymbol] = files;
 				});
 				if(mod == 256, { // if no modifier
+					 "choosing playlist nr: ".post; char.postln;
 					 if(playlists[char.asSymbol].isNil.not, {
 					 	files = playlists[char.asSymbol];
 						jpg = nil;

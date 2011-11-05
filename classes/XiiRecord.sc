@@ -1,4 +1,4 @@
-// ixi adoptation of Newton Armstrong's Record class
+// ixi adaptation of Newton Armstrong's Record class
 
 XiiRecord {
 	var <server, <inbus, <numChannels, <headerFormat, <sampleFormat;
@@ -6,7 +6,7 @@ XiiRecord {
 	
 	*new { arg server, inbus=0, numChannels=2, headerFormat='aiff', sampleFormat='int16';		^super.new.initXiiRecord(server, inbus, numChannels, headerFormat, sampleFormat)
 	}
-	
+
 	*initClass {
 		for(1, 8, { arg i;
 			// 

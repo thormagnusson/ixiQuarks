@@ -3,6 +3,7 @@ XixiSampleCircle {
 	var <>point, <>pitch, rect, stageRect;
 	var fillcolor, strokecolor;
 	var rot, predatorArray, preyArray;
+	var mousePoint;
 	
 	var xDistance, yDistance, destpoint, move, friction;
 	var posNegX, posNegY;
@@ -13,11 +14,11 @@ XixiSampleCircle {
 	var <>selected, sampleNameField, pitchSampleField, outbus;
 	var synthesis, fixedPitch, fixedPitchMode, poolname;
 	var inbus, pitchratio;
-	var env;
-	
+	var env, synth;
+	var synthPlaying;
 	// new vars
 	var radius, rangeradius;
-	var amp, drawer;
+	var amp, alpha, drawer;
 	
 	*new { | point, stageRect, drawer | 
 		^super.new.initXixiSampleCircle(point, stageRect, drawer);
@@ -32,8 +33,9 @@ XixiSampleCircle {
 			point = argpoint;
 		});
 		drawer = argdrawer;
-		
-		fillcolor = Color.rand.alpha_(1);
+		alpha = 0.5;
+
+		fillcolor = Color.rand.alpha_(alpha);
 		strokecolor = Color.black;
 		predatorArray = [];
 		rot = pi.rand;
@@ -58,7 +60,10 @@ XixiSampleCircle {
 		radius = 15;
 		rangeradius = 30;
 		rect = Rect(point.x-radius, point.y-radius, radius*2, radius*2);
-		
+		myBuffer = Buffer.read(Server.default, "sounds/a11wlk01-44_1.aiff"); // TEMP
+		mousePoint = Point(0, 0);
+
+		synthPlaying = false;
 		pitch = stageRect.height - point.y;
 		fixedPitchMode = false;
 		fixedPitch = pitch;
@@ -88,7 +93,26 @@ XixiSampleCircle {
 			})
 		});
 		*/
+		
 		close = 100;
+		dist = this.point.distanceFrom(mousePoint); // using the Point method, not the one in this class
+		[\ampdist, (abs(dist)-100)/100].postln;
+        	if(dist < 100, { // fix this:
+        		if(synthPlaying.not, {
+        			synth = Synth(\xiiWarp, [\bufnum, myBuffer, \vol, 1, \trate, 10, \dur, 1.reciprocal]);
+        			synthPlaying = true;
+        		});
+			synth.set(\vol, (abs(dist)-100)/100);
+		}, {
+        		if(synthPlaying, {
+        			synth.free;
+        			synthPlaying = false;
+        		});
+		});
+		
+		
+		close = 100;
+		
 		predatorArray.do({ |predator|
 			var amp;
 			amp = 0;
@@ -97,7 +121,9 @@ XixiSampleCircle {
         			if(dist < close, {
 					rot = atan2(predator.point.y - point.y, predator.point.x - point.x);
 					close = dist;
-					fillcolor = Color.new255(159+(abs(dist)), abs(dist)*2.5, 0);
+					//fillcolor = Color.new255(159+(abs(dist)), abs(dist)*2.5, 0);
+				//	[\dist, abs(dist)].postln;
+					fillcolor = fillcolor.alpha_(alpha-((abs(dist)-100)/100));
 				})          			
 			});
 		});
@@ -300,6 +326,10 @@ XixiSampleCircle {
 	setInBus_ {arg bus;
 		inbus = bus;
 	}
+	
+	supplyPredatorArray_ {arg predators;
+		predatorArray = predators;
+	}
 
 	setPitchMode_ {arg mode;
 		if(mode == 1, {
@@ -354,11 +384,12 @@ XixiSampleCircle {
 	}
 
 	setAmp_{arg aamp;
-		if(selected, { amp = aamp; fillcolor.alpha_(aamp) });
+		if(selected, { amp = aamp; alpha = aamp; fillcolor.alpha_(aamp) });
 		drawer.refresh;
 	}
 	
 	mouseDown { |x, y, func|
+		mousePoint = Point(x, y);
 		if(rect.intersects(Rect(x, y, 1, 1)), {
 			preyArray.do({ arg prey; prey.selected = false });
 			move = true;
@@ -369,11 +400,15 @@ XixiSampleCircle {
 				preyArray.copy.do({ arg prey, i; 
 					if(prey.selected == true, { 
 						preyArray.swap(i, preyArray.size-1); 
+//						[\predatorArray, predatorArray].postln;
 						drawer.replaceDrawList(preyArray);
+						drawer.addToDrawList(predatorArray);
 						break.value 
 					})
 				})
 			};
+
+/*
 			if(fixedPitchMode, {
 				pitch = fixedPitch;
 				pitchratio = 1.0; // rate for buffers and audiostream
@@ -381,7 +416,7 @@ XixiSampleCircle {
 				pitch = stageRect.height - point.y;
 				pitchratio = ((pitch/460)+0.5); // rate for buffers and audiostream
 			});
-/*
+
 			if(synthesis == false, {
 				sampleNameField.string_(myBufferName);
 			},{
@@ -395,6 +430,7 @@ XixiSampleCircle {
 	}
 		
 	mouseTrack { |x, y, func|
+		mousePoint = Point(x, y);
 		if(move==true, {
 			point = Point(x, y);
 			rect = Rect(point.x-radius, point.y-radius, radius*2, radius*2);

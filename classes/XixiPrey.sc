@@ -31,7 +31,7 @@ XixiPrey {
 		strokecolor = Color.black;
 		predatorArray = [];
 		rot = pi.rand;
-		rect = Rect(point.x-5, point.y-5, 10, 10);
+		rect = Rect(point.x, point.y, 10, 10);
 				
 		destpoint = Point(50.rand2, 50.rand2);
 		move = false;
@@ -330,7 +330,8 @@ XixiPrey {
 	}
 	
 	mouseDown { |x, y, func|
-		if(rect.intersects(Rect(x+7, y+5, 1, 1)), {
+		[\x, x, \y, y].postln;
+		if(Rect(point.x-5, point.y-5, 10, 10).intersects(Rect(x, y, 1, 1)), {
 			preyArray.do({arg prey; prey.selected = false});
 			move = true;
 			selected = true;

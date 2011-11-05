@@ -171,9 +171,13 @@ XixiWorm {
 	}
 	
 	mouseDown { |x, y, func|
+		[\px, point.x, \py, point.y, \size, size].postln;
 		if(Rect(point.x, point.y, size, size).intersects(Rect(x, y, 1, 1)), {
 			"move is true".postln;
 			move = true;
+			^true;
+		},{
+			^false;			
 		});
 	}
 		

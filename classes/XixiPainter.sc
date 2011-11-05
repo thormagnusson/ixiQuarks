@@ -1,7 +1,7 @@
 
 XixiPainter {
 	var drawer;
-	var win, bounds;
+	var win, rect;
 	var keyDownAction, keyUpAction;
 	var backgrDrawFunc;
 	var background, fillcolor;
@@ -15,20 +15,14 @@ XixiPainter {
 	}
 	
 	initXixiPainter { arg w, argbounds;
- 		bounds = argbounds ? Rect(20, 20, 400, 200);
-		bounds = Rect(bounds.left + 0.5, bounds.top + 0.5, bounds.width, bounds.height);
+ 		rect = argbounds ? Rect(20, 20, 400, 200);
+	//	bounds = Rect(bounds.left , bounds.top,  bounds.width, bounds.height);
 		
 		win = w;
 		// ? SCWindow("XixiDrawer", 
 		//	Rect(10, 250, bounds.left + bounds.width + 40, bounds.top + bounds.height+30));
 		win.front;
-		win.acceptsMouseOver = false;
-
-		win.onClose_({
-			playerTask.removedFromScheduler; 
-			playerTask.stop;
-			this.remove;
-		});
+		//win.acceptsMouseOver = true;
 
 		drawList = List.new;
 		
@@ -39,7 +33,7 @@ XixiPainter {
 		background = Color.white;
 
 
-		drawer = UserView.new(win, Rect(bounds.left, bounds.top, bounds.width, bounds.height))
+		drawer = UserView.new(win, rect)
 			.canFocus_(true)
 			.focusColor_(Color.new(0,0,0,0))
 			.mouseDownAction_({|me, x, y, mod|
@@ -51,7 +45,7 @@ XixiPainter {
 				
 				block {|break|
 					drawList.do({ |object|
-						if(object.mouseDown(x+5, y+5), {   // if mousedown returns true
+						if(object.mouseDown(x, y), {   // if mousedown returns true
 							if(running == false, {this.refresh});
 							break.value; 			   // then break out of the loop
 						});
@@ -59,16 +53,15 @@ XixiPainter {
 				};
 				this.refresh;
 			})
-			//.relativeOrigin_(false)
 			.mouseMoveAction_({|me, x, y, mod|
 				drawList.do({ |object|
-					object.mouseTrack(x+5, y+5);
+					object.mouseTrack(x, y);
 				});
 				if(running == false, {this.refresh});
 			})
 			.mouseOverAction_({|me, x, y|
 				drawList.do({ |object|
-					object.mouseOver(x+5, y+5);
+					object.mouseOver(x, y);
 				})
 			})
 			.keyDownAction_({ |me, key, modifiers, unicode |
@@ -79,10 +72,18 @@ XixiPainter {
 			})
 			.mouseUpAction_({|me, x, y, mod|
 				drawList.do({ |object|
-					object.mouseUp(x+5, y+5);
+					object.mouseUp(x, y);
 				})
+			})
+			.drawFunc_({	
+				GUI.pen.color = background; // background color
+				GUI.pen.fillRect(Rect(0.5, 0.5, rect.width-1, rect.height-1)); // background fill
+				GUI.pen.color = Color.black;
+				drawList.do({ |object| object.draw.value });
+				GUI.pen.color = Color.black;
+				GUI.pen.strokeRect(Rect(0.5, 0.5, rect.width-1, rect.height-1)); // background frame
 			});
-			
+		/*			
 			win.drawHook_({	
 				GUI.pen.color = background; // background color
 				GUI.pen.fillRect(bounds); // background fill
@@ -91,6 +92,14 @@ XixiPainter {
 				GUI.pen.color = Color.black;
 				GUI.pen.strokeRect(bounds); // background frame
 			});
+		*/	
+			win.onClose_({
+				playerTask.removedFromScheduler; 
+				playerTask.stop;
+				this.remove;
+			});
+
+
 	}
 	
 	clearSpace {

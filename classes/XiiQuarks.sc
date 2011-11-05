@@ -252,6 +252,9 @@ Library.at(\menuItems,\tools,\guiDebugger).value;
 
 
 
+// BUG: in BufferPlayer - Fix range sliders moving when looking at sample 
+
+
 
 
 XiiQuarks {	

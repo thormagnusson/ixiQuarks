@@ -146,7 +146,7 @@ XiiPlayer {
 			.action_({ arg butt; var a, chNum, dur, filepath, pFunc;
 				if(txtv.items.size > 0, {
 					[\soundfile, soundfile].postln;
-					if(soundfile.isFolder.not, {
+					if(PathName(soundfile).isFolder.not, {
 					if(butt.value == 1, {
 						group = Group.new(server, \addToHead);
 						a = SoundFile.new;
