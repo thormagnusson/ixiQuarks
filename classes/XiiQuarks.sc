@@ -256,10 +256,12 @@ Library.at(\menuItems,\tools,\guiDebugger).value;
 
 
 
+// ADD: .synth defs for xiiquarks
+
 
 XiiQuarks {	
 
-	var thisversion = 4;
+	var thisversion = 7;
 
 	*new { 
 		^super.new.initXiiQuarks;
@@ -275,17 +277,22 @@ XiiQuarks {
 		var chosenWidget, widgetnum, types, typesview, ixilogo;
 		var settingRegister, settingNameView, storeSettingButt, comingFromFieldFlag, settingName;
 		var storedSettingsPop, loadSettingButt, deleteSettingButt, clearScreenButt;
-		var prefFile, preferences;
+		var prefFile, preferences, synthdefs;
 				
 		settingRegister = XiiSettings.new; // activate the settings registry
 
 		//GUI.cocoa;
+		synthdefs = SynthDescLib(\xiiquarks);
+		// read synth defs from file
+		("ixiquarks/synthdefs.scd").loadPath;
+	//	SynthDescLib.getLib(\xiilang).synthDescs.keys.asArray;
+		{SynthDescLib.global.read}.defer(2);
 		
 		XQ.new; // A class containing all the settings and environment maintenance
 		
 		XQ.preferences; // retrieve preferences from the "preferences.ixi" file
 		// add the preferences file to the preferences Menu Item.
-		thisProcess.preferencesAction_({ "open 'preferences/preferences.ixi'".unixCmd; });
+		thisProcess.preferencesAction_({ "open 'ixiquarks/preferences/preferences.ixi'".unixCmd; });
 
 		// Server.default.options.device = XQ.pref.device; // the audio device (soundcard)
 		midi = XQ.pref.midi; // if you want to use midi or not (true or false)
@@ -294,7 +301,7 @@ XiiQuarks {
 		midiInPorts = XQ.pref.midiInPorts;
 		midiOutPorts = XQ.pref.midiOutPorts;
 		if(XQ.pref.emailSent == false, {
-			"open preferences/email.html".unixCmd;
+			"open ixiquarks/preferences/email.html".unixCmd;
 		});
 		
 		XiiACDropDownChannels.numChannels_( XQ.pref.numberOfChannels ); // NUMBER OF AUDIO BUSSES
@@ -315,11 +322,11 @@ XiiQuarks {
 			["AudioIn", "Recorder", "Player", "BufferPool", "PoolManager", 
 			"EventRecorder", "FreqScope", "WaveScope", "Spectrogram", "EQMeter", "MixerNode", 
 			"ChannelSplitter", "Amplifier", "ChannelMeter", "TrigRecorder", 
-			"MusicTheory", "MuioPatchPanel"],
+			"MusicTheory"],
 	
-			["SoundScratcher", "ToshioMorpher", "SoundSculptor", "SoundDrops", "Predators",
-			 "Gridder", "PolyMachine", "GrainBox", "Quanoon", "StratoSampler", "BufferPlayer", 
-			 "Mushrooms", "ScaleSynth", "LiveCoder", "Slicer"], 
+			["SoundScratcher", "ToshioMorpher", "SoundSculptor",  "Slicer", "SoundDrops", 
+			"Predators", "Gridder", "PolyMachine", "GrainBox", "Quanoon", "StratoSampler", 
+			"BufferPlayer", "Mushrooms", "ScaleSynth", "LiveCoder"], 
 			
 			["Delay", "Freeverb", "AdCVerb", "Distortion", "ixiReverb", "Chorus",
 			"Octave", "Equalizer", "CyberPunk", "Tremolo", "BitCrusher", "CombVocoder", 

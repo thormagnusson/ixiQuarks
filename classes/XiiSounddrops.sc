@@ -488,8 +488,7 @@ volMsl = GUI.multiSliderView.new(win, Rect(120, 210, 680, 22))
 		soundFuncPop = GUI.popUpMenu.new(win, Rect(10, 49, 100, 16))
 				.font_(GUI.font.new("Helvetica", 9))
 				.items_(["sample", "sine", "bells", "sines", "synth1", "ks_string", 
-				"ixi_string", "impulse", "ringz", "klanks", "scode", "audiostream"])
-				.background_(Color.new255(255, 255, 255))
+				"ixi_string", "impulse", "ringz", "klanks", "scode", "audiostream"])				.background_(Color.new255(255, 255, 255))
 				.value_(1)
 				.canFocus_(false)
 				.action_({ arg popup;

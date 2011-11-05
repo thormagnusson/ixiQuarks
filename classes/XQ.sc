@@ -43,7 +43,7 @@ XQ {
 			("mkdir -p" + soundsfolderpath.quote).unixCmd;
 			"ixi-NOTE: an ixiquarks soundfolder was not found, it was created in sounds".postln;
 		});
-		preferencesfolderpath = String.scDir++"/preferences";
+		preferencesfolderpath = String.scDir++"/ixiquarks/preferences";
 		if(preferencesfolderpath.pathMatch==[], {
 			("mkdir -p" + preferencesfolderpath.quote).unixCmd;
 			"ixi-NOTE: an ixiquarks preferences folder was not found, it was created".postln;
@@ -108,7 +108,7 @@ XQ {
 	*preferences {
 		var prefFile, preferences;
 		try{
-			prefFile = File("preferences/preferences.ixi", "r");
+			prefFile = File("ixiquarks/preferences/preferences.ixi", "r");
 			preferences = prefFile.readAllString;
 			preferences.interpret;
 		} {

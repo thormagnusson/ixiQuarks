@@ -8,11 +8,11 @@ XiiSettings {
 		
 	initXiiSettings {
 		var file;
-		if(Object.readArchive("preferences/presets.ixi").isNil, {
+		if(Object.readArchive("ixiquarks/preferences/presets.ixi").isNil, {
 			settingsDict = IdentityDictionary.new;
 			"ixi-NOTE: NO WORRIES! 'presets.ixi' gets created when you store a preset".postln;
 		}, {
-			settingsDict = Object.readArchive("preferences/presets.ixi")
+			settingsDict = Object.readArchive("ixiquarks/preferences/presets.ixi")
 		});
 	}
 	
@@ -33,7 +33,7 @@ XiiSettings {
 			});
 		});
 		settingsDict.add(settingName.asSymbol -> setting);
-		settingsDict.writeArchive("preferences/presets.ixi");
+		settingsDict.writeArchive("ixiquarks/preferences/presets.ixi");
 	}	
 	
 	getSetting { arg name;
@@ -74,7 +74,7 @@ XiiSettings {
 	
 	removeSetting {arg settingName;
 		settingsDict.removeAt(settingName.asSymbol);
-		settingsDict.writeArchive("preferences/presets.ixi");
+		settingsDict.writeArchive("ixiquarks/preferences/presets.ixi");
 	}
 
 }

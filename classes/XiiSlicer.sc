@@ -92,7 +92,6 @@ XiiSlicer {
 	
 	closeAll 
 	{
-		"freeing all Slicer's synths".postln;
 		players.do({ arg i; i.free });
 	}
 	
@@ -375,7 +374,7 @@ XiiSlicer {
 	setLoopRange {arg chnl, startPos, numSelectedFrames;
 		var lo, hi, selfile;
 
-		[bufferGlobalLimits[0], "loop range"].postln;
+//		[bufferGlobalLimits[0], "loop range"].postln;
 		
 		bufferGlobalLimits[0] = startPos/buffer.numFrames;
 		bufferGlobalLimits[1] = bufferGlobalLimits[0]  + (numSelectedFrames/buffer.numFrames);
@@ -593,7 +592,6 @@ XiiSlicer {
 		setplayheads = { arg time, resp, msg;  // red playheads
 			var pos;
 			pos = msg[2] - instanceindex; 
-			[\pos, pos].postln;
 			if ( (pos >= 0) && (pos <= 7) , { // within range for this particular instance of Slicer
 				displays[pos].setplayhead(msg[3]); // sendTrigIndex is to avoid duplicated indexes between different ixiQuarks SendTrigs
 			});

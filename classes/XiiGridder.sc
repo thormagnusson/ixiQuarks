@@ -71,10 +71,10 @@ params = if(setting.isNil, {[1, 0, 12, 4000, 1, 120, 1, 0, 0, 1, 0]}, {setting[2
 		tuningArray = this.makeTuning(12, transposition, maxFreq).reverse;
 		pitchRatioArray = this.makeRatioTuning(12, transposition).reverse;
 		
-		scaleDict = if(Object.readArchive("preferences/gridderScales.ixi") == nil, {
+		scaleDict = if(Object.readArchive("ixiquarks/preferences/gridderScales.ixi") == nil, {
 					().add(12 -> XiiTheory.scales);
 					}, {
-					 Object.readArchive("preferences/gridderScales.ixi");
+					 Object.readArchive("ixiquarks/preferences/gridderScales.ixi");
 					});
 
 		scalelib = XiiTheory.scales;
@@ -708,7 +708,7 @@ params = if(setting.isNil, {[1, 0, 12, 4000, 1, 120, 1, 0, 0, 1, 0]}, {setting[2
 			CmdPeriod.remove(cmdPeriodFunc);
 			XQ.globalWidgetList.do({arg widget, i; if(widget === this, {t = i})});
 			try{XQ.globalWidgetList.removeAt(t)};
-			scaleDict.writeArchive("preferences/gridderScales.ixi"); 
+			scaleDict.writeArchive("ixiquarks/preferences/gridderScales.ixi"); 
 		});
 		
 		//setting
