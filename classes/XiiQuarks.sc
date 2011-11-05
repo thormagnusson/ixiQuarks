@@ -341,9 +341,11 @@ XiiQuarks {
 			
 			["Limiter", "Normalizer", "Gate", "Compressor", "Sustainer", "NoiseGate", "Expander"],
 			
-			["Noise", "Oscillators", "Drawer", "Mp3Player", "ImageConverter"],
+			["Noise", "Oscillators", "Drawer"]
+
+//			["Noise", "Oscillators", "Drawer", "Mp3Player", "ImageConverter"],
 			
-			["SpaceMachine", "TimeMachine", "MindMachine", "IceMachine", "GlitchMachine"] // add machines to types below
+//			["SpaceMachine", "TimeMachine", "MindMachine", "IceMachine", "GlitchMachine"] // add machines to types below
 		];
 		
 		types = ["utilities", "instruments", "effects", "filters", "spectral", "dynamics", "other"];
