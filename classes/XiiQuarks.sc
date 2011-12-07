@@ -256,8 +256,6 @@ Library.at(\menuItems,\tools,\guiDebugger).value;
 
 
 
-// ADD: .synth defs for xiiquarks
-
 
 XiiQuarks {	
 
@@ -282,11 +280,14 @@ XiiQuarks {
 		settingRegister = XiiSettings.new; // activate the settings registry
 
 		//GUI.cocoa;
+		/*
+		// the following should be used when instruments are ready for user synthdefs
 		synthdefs = SynthDescLib(\xiiquarks);
 		// read synth defs from file
 		("ixiquarks/synthdefs.scd").loadPath;
-	//	SynthDescLib.getLib(\xiilang).synthDescs.keys.asArray;
+			//	SynthDescLib.getLib(\xiilang).synthDescs.keys.asArray;
 		{SynthDescLib.global.read}.defer(2);
+		*/
 		
 		XQ.new; // A class containing all the settings and environment maintenance
 		
@@ -341,9 +342,9 @@ XiiQuarks {
 			
 			["Limiter", "Normalizer", "Gate", "Compressor", "Sustainer", "NoiseGate", "Expander"],
 			
-			["Noise", "Oscillators", "Drawer"]
+//			["Noise", "Oscillators", "Drawer"]
 
-//			["Noise", "Oscillators", "Drawer", "Mp3Player", "ImageConverter"],
+			["Noise", "Oscillators", "Drawer", "Mp3Player", "ImageConverter"]
 			
 //			["SpaceMachine", "TimeMachine", "MindMachine", "IceMachine", "GlitchMachine"] // add machines to types below
 		];

@@ -17,10 +17,10 @@ XiiPoolManager {
 		xiigui = nil; // not using window server class here
 		params = if(setting.isNil, {[0,0,0,0,0]}, {setting[2]});
 
-		bufferDict = if(Object.readArchive("preferences/bufferPools.ixi").isNil,{
+		bufferDict = if(Object.readArchive("ixiquarks/preferences/bufferPools.ixi").isNil,{
 						()
 					}, {
-						Object.readArchive("preferences/bufferPools.ixi")					}); // if no dict, create it
+						Object.readArchive("ixiquarks/preferences/bufferPools.ixi")					}); // if no dict, create it
 		
 		win = GUI.window.new("- poolmanager -", Rect(point.x, point.y, rect.width, rect.height),
 			 resizable:false);
@@ -40,7 +40,7 @@ XiiPoolManager {
 			.action_({
 				bufferDict.removeAt(selPool.items[selPool.value].asSymbol);
 				selPool.items_(bufferDict.keys.asArray);
-				bufferDict.writeArchive("preferences/bufferPools.ixi");
+				bufferDict.writeArchive("ixiquarks/preferences/bufferPools.ixi");
 			});
 
 		loadPool = GUI.button.new(win, Rect(82, 27, 67, 16))
@@ -95,7 +95,7 @@ XiiPoolManager {
 					XQ.globalBufferDict.add(str.asSymbol -> oldnamelist);
 					// and rename the window
 					pool.setName_(str);
-					bufferDict.writeArchive("preferences/bufferPools.ixi");
+					bufferDict.writeArchive("ixiquarks/preferences/bufferPools.ixi");
 				});
 		});
 		
