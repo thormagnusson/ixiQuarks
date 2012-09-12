@@ -24,7 +24,7 @@ XiiSoundScratcher {
 	var wacomFlag, poolName;
 	
 	*new { arg server, channels, setting = nil; 
-		if ( GUI.id==\cocoa, {
+		if ( (GUI.id==\cocoa) || (GUI.id==\qt), {
 			^super.new.initXiiSoundScratcher(server, channels, setting);
 		},{
 			^super.new.initXiiSoundScratcherSwing(server, channels, setting);
@@ -100,7 +100,6 @@ params = if(setting.isNil, {[0, 1, 0.2, 25, 1, 0, 0, 1, 1.0, 0]}, {setting[2]});
 		sndfileview = SoundFileView.new(win, Rect(120, 5, bounds.width-120, bounds.height-10))
 			.soundfile_(soundfile)
 			.read(0, soundfile.numFrames)
-			.elasticMode_(true)
 			.timeCursorOn_(false)
 			.timeCursorColor_(Color.white)
 			.drawsWaveForm_(true)
@@ -109,6 +108,8 @@ params = if(setting.isNil, {[0, 1, 0.2, 25, 1, 0, 0, 1, 1.0, 0]}, {setting[2]});
 			.background_(bgColor)
 			.canFocus_(false)
 			.setSelectionColor(0, Color.new255(105, 185, 125));
+			if(GUI.id == \cocoa, { sndfileview.elasticMode_(true) });
+
 		
 		soundfile.close;
 
@@ -496,7 +497,7 @@ params = if(setting.isNil, {[0, 1, 0.2, 25, 1, 0, 0, 1, 1.0, 0]}, {setting[2]});
 					soundfile.openRead(filepath);
 					sndfileview.soundfile_(soundfile);
 					sndfileview.read(selStart, selNumFrames);
-					sndfileview.elasticMode_(true);
+					if(GUI.id == \cocoa, {sndfileview.elasticMode_(true)});
 					myBuffer = XQ.globalBufferDict.at(poolName)[0][popup.value];
 					// create a mono buffer if the sound is stereo
 					if(soundfile.numChannels == 2, {
@@ -1106,7 +1107,6 @@ params = if(setting.isNil, {[0, 1, 0.05, 10, 1, 0, 0, 1, 1.0, 0]}, {setting[2]})
 		sndfileview = GUI.soundFileView.new(win, Rect(120, 5, bounds.width-120, bounds.height-10))
 			.soundfile_(soundfile)
 			.read(0, soundfile.numFrames)
-			//.elasticMode_(true)
 			.timeCursorOn_(false)
 			.timeCursorColor_(Color.white)
 			.drawsWaveForm_(true)
@@ -1115,6 +1115,7 @@ params = if(setting.isNil, {[0, 1, 0.05, 10, 1, 0, 0, 1, 1.0, 0]}, {setting[2]})
 			.background_(bgColor)
 			.canFocus_(false)
 			.setSelectionColor(0, Color.new255(105, 185, 125));
+			if(GUI.id == \cocoa, {sndfileview.elasticMode_(true)});
 		
 		soundfile.close;
 
@@ -1478,7 +1479,8 @@ params = if(setting.isNil, {[0, 1, 0.05, 10, 1, 0, 0, 1, 1.0, 0]}, {setting[2]})
 					soundfile.openRead(filepath);
 					sndfileview.soundfile_(soundfile);
 					sndfileview.read(selStart, selNumFrames);
-					sndfileview.elasticMode_(true);
+					if(GUI.id == \cocoa, {sndfileview.elasticMode_(true)});
+		
 					myBuffer = XQ.globalBufferDict.at(poolName)[0][popup.value];
 					// create a mono buffer if the sound is stereo
 					if(soundfile.numChannels == 2, {

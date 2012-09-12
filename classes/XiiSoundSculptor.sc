@@ -56,7 +56,6 @@ XiiSoundSculptor {
 		sndfileview = SoundFileView.new(win, Rect(120, 5, 700, 482))
 			.soundfile_(soundfile)
 			.read(0, soundfile.numFrames)
-			.elasticMode_(true)
 			.timeCursorOn_(true)
 			.timeCursorColor_(Color.white)
 			.drawsWaveForm_(true)
@@ -65,7 +64,8 @@ XiiSoundSculptor {
 			.background_(XiiColors.lightgreen)
 			.canFocus_(false)
 			.setSelectionColor(0, Color.new255(105, 185, 125));
-		
+			if(GUI.id == \cocoa, { sndfileview.elasticMode_(true) });
+
 		soundfile.close;
 		
 		userView = UserView.new(win, Rect(120, 5, 700, 482))
@@ -201,7 +201,7 @@ XiiSoundSculptor {
 									soundfile.openRead(filepath);
 									sndfileview.soundfile_(soundfile);
 									sndfileview.read(selStart, selNumFrames);
-									sndfileview.elasticMode_(true);
+									if(GUI.id == \cocoa, { sndfileview.elasticMode_(true) });
 									soundfile.close;
 								});
 							});

@@ -15,7 +15,7 @@ XiiImageConverter{
 		width = 800;
 		height = 0;
 		desktop = true;
-		htmlstring = "<html>\n<body>\n";
+		htmlstring = "<html>\n<body>\n<center>\n";
 		
 		win = Window.new("ixi img converter", Rect(0, 600, 320, 290), resizable: false);
 		
@@ -103,7 +103,7 @@ XiiImageConverter{
 						});
 						if(desktop, {
 							{
-							"__________ AAAAAAAAAA________________".postln;
+							//"__________ AAAAAAAAAA________________".postln;
 							"mkdir ~/Desktop/ixi_imgs".unixCmd;
 							0.1.wait; // give system time to create the folder - if not File will not work
 							htmlfile = File("~/Desktop/ixi_imgs/ixi_imgs.html".standardizePath, "w");
@@ -114,12 +114,12 @@ XiiImageConverter{
 								(command+filepath+"--out ~/Desktop/ixi_imgs/"++filename).unixCmd;
 								0.1.wait;
 							});
-							htmlstring = htmlstring ++ "</body>\n</html>";
+							htmlstring = htmlstring ++ "</center>\n</body>\n</html>";
 							htmlfile.write(htmlstring);
 							htmlfile.close;
 							}.fork(AppClock);
 						}, {
-							"__________ BBBBBBBBBB________________".postln;
+							//"__________ BBBBBBBBBB________________".postln;
 							htmlfile = File(files[0].dirname++"/ixi_imgs.html", "w");
 							files.do({arg filepath; var filename;
 								filename = filepath.dirname++"/_ixi_"++filepath.basename.splitext[0]++"."++formatpop.items[formatpop.value];
@@ -127,14 +127,14 @@ XiiImageConverter{
 								(command+filepath+"--out "++filename).postln;
 								(command+filepath+"--out "++filename).unixCmd;
 							});
-							htmlstring = htmlstring ++ "</body>\n</html>";
+							htmlstring = htmlstring ++ "</center>\n</body>\n</html>";
 							htmlfile.write(htmlstring);
 							htmlfile.close;
 						});
 					
 					
 					});
-					htmlstring = "<html>\n<body>\n"; // set it back to intial state
+					htmlstring = "<html>\n<body>\n<center>\n"; // set it back to intial state
 				});
 				
 		dskbut = Button(win, Rect(264, 263, 14, 14))

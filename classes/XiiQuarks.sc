@@ -280,6 +280,7 @@ XiiQuarks {
 		settingRegister = XiiSettings.new; // activate the settings registry
 
 		//GUI.cocoa;
+		//GUI.qt;
 		/*
 		// the following should be used when instruments are ready for user synthdefs
 		synthdefs = SynthDescLib(\xiiquarks);
@@ -576,7 +577,9 @@ XiiQuarks {
 		};
 		win.refresh;
 		win.front;
-		if (GUI.id == \cocoa, { this.addixiHelpMenu }, { this.addixiHelpMenu_J });
+		this.addixiHelpMenu;
+		
+	//	if (GUI.id == \cocoa, { this.addixiHelpMenu }, { this.addixiHelpMenu_J });
 
 	}
 	
@@ -614,7 +617,7 @@ XiiQuarks {
 
 		//b.setShortCut("o", true, false);//cmd-opt-o
 	}
-
+/*
 	addixiHelpMenu_J {
 		// add feedback mechanism, suggestions etc.
 		// update ixiQuarks - check if this is the latest version
@@ -650,4 +653,6 @@ XiiQuarks {
 
 		//b.setShortCut("o", true, false);//cmd-opt-o
 	}
+*/
+
 }

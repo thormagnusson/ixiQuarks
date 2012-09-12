@@ -172,7 +172,7 @@ XiiRecorder {
 				params[3] = sl.value;
 			});
 			
-		SCStaticText(win, Rect(10, 70, 196, 36))
+		StaticText(win, Rect(10, 70, 196, 36))
 				.font_(GUI.font.new("Helvetica", 9))
 				.string_("NOTE: use 8-9 to record mic input");
 			
